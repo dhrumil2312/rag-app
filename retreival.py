@@ -39,7 +39,7 @@ def initialize_qa_system():
     Context: 
     {context}
 
-    Question : {question}
+    Question : {input}
 
     Provide a clear and concise answer!
     
@@ -47,7 +47,7 @@ def initialize_qa_system():
 
     prompt = PromptTemplate(
         template=prompt_template,
-        input_variable=["context", "question"]
+        input_variable=["context", "input"]
     )
 
     qa_chain = create_stuff_documents_chain(
@@ -68,19 +68,19 @@ def initialize_qa_system():
 def format_answer(result):
     print("Answer: ")
     print("-"*60)
-    print(result['result'])
+    print(result['answer'])
     print("-"*60)
 
-    if result.get('source_documents'):
+    if result.get('context'):
         print(" Sources:")
-        for i, doc in enumerate(result['source_documents']):
+        for i, doc in enumerate(result['context']):
             doc_id = doc.metadata.get('id')
             doc_title = doc.metadata.get('title')
             url = doc.metadata.get('url')
             
             print(f"Source {i}")
-            print(f"\t\tID: {id}")
-            print(f"\t\tTitle: {title}")
+            print(f"\t\tID: {doc_id}")
+            print(f"\t\tTitle: {doc_title}")
             print(f"\t\tURL: {url}")
             
 
@@ -108,7 +108,7 @@ def main():
         print("\n\n Thinking \n\n")
 
         try:
-            result = qa_chain.invoke({"query": question})
+            result = qa_chain.invoke({"input": question})
             format_answer(result)
         except Exception as e:
             print("Uh oh these is an error")
